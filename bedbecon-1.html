@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BedBeacon | Hospital Bed Finder</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f7f8;
+    color: #183746;
+}
+
+header {
+    background: #087f8c;
+    color: white;
+    text-align: center;
+    padding: 24px 12px;
+}
+
+header h1 { margin: 0; font-size: 32px; }
+header p { margin-bottom: 0; }
+
+.container {
+    max-width: 850px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+.notice {
+    background: #fff3cd;
+    border-left: 5px solid #e5a000;
+    padding: 12px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    border-radius: 5px;
+}
+
+.search-box, .hospital {
+    background: white;
+    padding: 18px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+input, select {
+    border: 1px solid #bdcdd2;
+    background: white;
+}
+
+button {
+    border: none;
+    background: #087f8c;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover { opacity: 0.9; }
+
+.hospital h3 {
+    margin-top: 0;
+    color: #087f8c;
+}
+
+.beds {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.bed-item {
+    flex: 1;
+    background: #e4f5f1;
+    padding: 12px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.bed-item strong {
+    display: block;
+    font-size: 25px;
+    color: #087f8c;
+}
+
+.status {
+    color: #986800;
+    font-size: 13px;
+}
+
+.call-button {
+    display: block;
+    background: #198754;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    padding: 13px;
+    margin-top: 12px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+    color: #526b73;
+}
+
+@media(max-width: 480px) {
+    .beds { flex-direction: column; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🏥 BedBeacon</h1>
+    <p>Smart Hospital Bed Availability & Verification Platform</p>
+    <p>Find hospitals. Check reported beds. Contact for confirmation.</p>
+</header>
+
+<main class="container">
+
+    <div class="notice">
+        <strong>⚠️ Demo Notice:</strong>
+        This website uses fictional sample hospital data.
+        Bed availability is NOT live or verified.
+        Always contact a hospital to confirm availability.
+    </div>
+
+    <section class="search-box">
+        <h2>Find Hospital Beds</h2>
+
+        <label for="location">City or area</label>
+        <input id="location" type="text"
+               placeholder="Example: Kolar, Bengaluru">
+
+        <label for="bedType">Bed category</label>
+        <select id="bedType">
+            <option value="all">All categories</option>
+            <option value="general">General beds</option>
+            <option value="icu">ICU beds</option>
+        </select>
+
+        <button onclick="searchHospitals()">🔍 Search Hospitals</button>
+        <button onclick="resetSearch()">Show All Hospitals</button>
+    </section>
+
+    <h2>Hospital Results</h2>
+    <div id="results"></div>
+
+</main>
+
+<footer>
+    BedBeacon | Team Code4Care<br>
+    Healthcare information demonstration
+</footer>
+
+<script>
+// Fictional demo data. Numbers are placeholders, not hospital contacts.
+const hospitals = [
+    {
+        name: "Sunrise General Hospital",
+        location: "Kolar",
+        general: 12,
+        icu: 3,
+        phone: "0800646708"
+    },
+    {
+        name: "City Care Hospital",
+        location: "Bengaluru",
+        general: 8,
+        icu: 2,
+        phone: "8050432223"
+    },
+    {
+        name: "Green Valley Medical Centre",
+        location: "Mysuru",
+        general: 15,
+        icu: 4,
+        phone: "8123369465"
+    },
+    {
+        name: "Community Health Hospital",
+        location: "Chikkaballapur",
+        general: 6,
+        icu: 1,
+        phone: "4613673995"
+    },
+    {
+        name: "People's Care Hospital",
+        location: "Mandya",
+        general: 10,
+        icu: 2,
+        phone: "8129106423"
+    }
+];
+
+function displayHospitals(list) {
+    const results = document.getElementById("results");
+    results.innerHTML = "";
+
+    if (list.length === 0) {
+        results.innerHTML =
+            "<p>No matching hospitals found. Try another location.</p>";
+        return;
+    }
+
+    list.forEach(hospital => {
+        const card = document.createElement("article");
+        card.className = "hospital";
+
+        const contact = hospital.phone
+            ? `<p>📞 Phone: ${hospital.phone}</p>
+               <a class="call-button"
+                  href="tel:${hospital.phone.replace(/[^+\d]/g, "")}">
+                  📞 Call Hospital
+               </a>`
+            : `<p>📞 Phone: Number not available</p>
+               <button disabled style="background:#888;cursor:not-allowed">
+                  Call number not configured
+               </button>`;
+
+        card.innerHTML = `
+            <h3>🏥 ${hospital.name}</h3>
+            <p>📍 Location: ${hospital.location}</p>
+
+            <div class="beds">
+                <div class="bed-item">
+                    <strong>${hospital.general}</strong>
+                    General beds*
+                </div>
+                <div class="bed-item">
+                    <strong>${hospital.icu}</strong>
+                    ICU beds*
+                </div>
+            </div>
+
+            <p class="status">
+                ⚠️ Fictional sample figures — not real-time availability.
+            </p>
+
+            ${contact}
+
+            <p>Please confirm bed availability directly with the hospital.</p>
+        `;
+
+        results.appendChild(card);
+    });
+}
+
+function searchHospitals() {
+    const location = document.getElementById("location")
+        .value.trim().toLowerCase();
+
+    const type = document.getElementById("bedType").value;
+
+    const filtered = hospitals.filter(hospital => {
+        const matchesLocation =
+            hospital.location.toLowerCase().includes(location) ||
+            hospital.name.toLowerCase().includes(location);
+
+        let matchesBeds = true;
+
+        if (type === "general") matchesBeds = hospital.general > 0;
+        if (type === "icu") matchesBeds = hospital.icu > 0;
+
+        return matchesLocation && matchesBeds;
+    });
+
+    displayHospitals(filtered);
+}
+
+function resetSearch() {
+    document.getElementById("location").value = "";
+    document.getElementById("bedType").value = "all";
+    displayHospitals(hospitals);
+}
+
+// Display the sample hospitals immediately.
+displayHospitals(hospitals);
+</script>
+
+</body>
+</html>
